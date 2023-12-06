@@ -3,6 +3,7 @@ from tkinter import messagebox
 import os
 import sys
 import classes
+import csv
 
 
 class Gui:
@@ -59,6 +60,7 @@ class Gui:
         self.__name_entries: list = []
         self.__grade_entries: list = []
         self.student_count_number += 1
+        #This part creates all of the entries.
         if self.student_count_input.get().isdigit():
             if self.student_count_number <= 1:
                 self.count: int = int(self.student_count_input.get())
@@ -81,6 +83,7 @@ class Gui:
                     self.frame_six = Frame(self.window).grid(row=self.count + 5, columnspan=4)
                     self.reset_entry_button = Button(self.frame_six, text='Clear Text', command=self.resetAll).grid(row=self.count+5, column=1)
                     self.restart_button = Button(self.frame_six, text='Restart Program',command=self.restart).grid(row=self.count+5, column=2)
+                    self.store_data_button = Button(self.frame_six, text='Store Data',command=self.store_data).grid(row=self.count+5,column=3)
                 else:
                     messagebox.showerror("Overload Error","Too Many Students! Max:24")
                     self.student_count_number = 0
@@ -143,3 +146,10 @@ class Gui:
         """
         python = sys.executable
         os.execl(python, python, *sys.argv)
+    def store_data(self):
+        with open("grades.csv","w") as grade_file:
+            writer = csv.writer(grade_file)
+            writer.writerow(['Name','Grades'])
+            for key in self.__students.keys():
+                writer.writerow([key,self.__students[key]])
+        messagebox.showinfo("Data Stored","Data Stored!")
