@@ -1,0 +1,21 @@
+def logic(grades,students) -> list:
+    """
+    This function handles the necessary math to set up everyone's grades
+    :param best: 
+    """
+    best = max(grades)
+    student_dictionary = {}
+    for index,value in enumerate(grades):
+        if value >= best-10:
+            student_dictionary[students[index]] = 'A'
+        elif value >= best - 20:
+            student_dictionary[students[index]] = 'B'
+        elif value >= best - 30:
+            student_dictionary[students[index]] = 'C'
+        elif value >= best - 40:
+            student_dictionary[students[index]] = 'D'
+        else:
+            student_dictionary[students[index]] = 'F'
+    return student_dictionary
+
+
