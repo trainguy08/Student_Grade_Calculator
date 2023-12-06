@@ -1,0 +1,145 @@
+from tkinter import *
+from tkinter import messagebox
+import os
+import sys
+import classes
+
+
+class Gui:
+    """
+    This class holds the code necessary for the Graphical User Interface
+    """
+    def __init__(self, window):
+        """
+        This function sets up the graphic user interface. It sets up the opening frame
+        :param self.student_count_number: This counts how many times a functioning number has been submitted.
+        :param self.window: This container holds all of the frames
+        :param self.frame_one: This frame holds the intial entries
+        :param self.label_title: This label creates the title for the app
+        :param self.frame_two: This frame holds the necessary tools to create
+        :param self.student_count_label: This Label Shows the User where to enter the amount of students they are entering
+        :param self.student_count_input: This is the input for how many students are being entered.
+        :param self.student_count_button: This button submits the amount of students the user wishes to submit.
+        """
+        self.student_count_number:int = 0
+        self.window = window
+        #App Title
+        self.frame_one = Frame(self.window).grid(row=0, columnspan=3)
+        self.label_title = Label(self.frame_one, text='Student Grade Calculator', font=("Arial", 24)).grid(row=0,column=2)
+
+
+        #Input Device For Number of Students
+        self.frame_two = Frame(self.window).grid(row=1, columnspan=3)
+        self.student_count_label = Label(self.frame_two, text='Number of Students').grid(row=1,column=1,padx=(50,0))
+        self.student_count_input = Entry(self.frame_two, width=20)
+        self.student_count_input.grid(row=1,column=2)
+        self.student_count_button = Button(self.frame_two, text='Submit Data', command=self.count_button).grid(row=1,column=3)
+
+
+    def count_button(self):
+        """
+        This function creates all of the entries for the students and grades.
+        :param self.name_entries: This is a list of entries for the students' names.
+        :param self.grade_entries: This is a list of entries for the students' grades.
+        :param self.student_count_number: This counts how many times a functioning number has been submitted.
+        :param self.count: This gets the number from the student count entry. This is used to use a specific number of entries.
+        :param self.frame_three: This frame houses the warning for best results.
+        :param self.name_notice: This label warns the user about how to get optimal results.
+        :param self.outer_canvas: This canvas houses all the student and grade widgets in a more organized space.
+        :param self.frame_four: This frame holds all of the entries
+        :param self.label_student1: This is the label for the student name entries
+        :param self.input_student1: This is the entry for the student's name
+        :param self.label_grade1: This is the label for the student grade entries
+        :param self.input_grade1: This is the entry for the student's grade
+        :param self.frame_five:This frame holds the submit button
+        :param self.submit_button: This is the button to submit the students' names and grades
+        :param self.reset_entry_button: This button clears all of the entries
+        :param self.restart_button: This button restarts the program
+        """
+        self.__name_entries: list = []
+        self.__grade_entries: list = []
+        self.student_count_number += 1
+        if self.student_count_input.get().isdigit():
+            if self.student_count_number <= 1:
+                self.count: int = int(self.student_count_input.get())
+                self.frame_three = Frame(self.window)
+                self.name_notice = Label(self.frame_three,text = 'For Best Results, Use First and Last Names! Avoid Repeats!').grid(row=2,column=2)
+                self.outer_canvas = Canvas(self.window)
+                if self.count <= 24:
+                    for i in range(1,self.count+1):
+                        self.frame_four = Canvas(self.outer_canvas).grid(row=3,columnspan=5)
+                        self.label_student1 = Label(self.frame_four, text='Name:   ').grid(row=i+3, column=0,padx=(50,0))
+                        self.input_student1 = Entry(self.frame_four)
+                        self.input_student1.grid(row=i+3, column=1)
+                        self.label_grade1 = Label(self.frame_four, text="Grade:").grid(row=i+3, column=2)
+                        self.input_grade1 = Entry(self.frame_four)
+                        self.input_grade1.grid(row=i+3, column=3)
+                        self.__name_entries.append(self.input_student1)
+                        self.__grade_entries.append(self.input_grade1)
+                    self.frame_five = Frame(self.window).grid(row=self.count+4, columnspan=4)
+                    self.submit_button = Button(self.frame_five, text="submit", command=self.button).grid(row=self.count+4,column=2)
+                    self.frame_six = Frame(self.window).grid(row=self.count + 5, columnspan=4)
+                    self.reset_entry_button = Button(self.frame_six, text='Clear Text', command=self.resetAll).grid(row=self.count+5, column=1)
+                    self.restart_button = Button(self.frame_six, text='Restart Program',command=self.restart).grid(row=self.count+5, column=2)
+                else:
+                    messagebox.showerror("Overload Error","Too Many Students! Max:24")
+                    self.student_count_number = 0
+            else:
+                messagebox.showerror("Error","Count Already Submitted")
+        else:
+            messagebox.showerror("Error","Input must be numeric.")
+            self.student_count_number = 0
+
+    def button(self):
+        """
+        This function verifies that every grade entry is a number, and adds the number to a list of grades.
+        :param self.__grades: This is a list of all the students' grades
+        :param self.__students: this is a list of all the students' names
+        """
+        self.__grades: list = []
+        self.__students: list = []
+        for index,value in enumerate(self.__grade_entries):
+            if value.get().isdigit():
+                self.__grades.append(int(value.get()))
+                self.result = True
+            else:
+                messagebox.showerror('Input Error', f'Error:Grade must be numeric!')
+                self.__grade_entries[index].focus_set()
+                self.result = False
+                break
+        for index,value in enumerate(self.__name_entries):
+            if value.get() not in self.__students:
+                self.__students.append(str(value.get()))
+                self.result = True
+            else:
+                self.result = False
+                messagebox.showerror("Name Error","Name Already in Use")
+                break
+        if self.result == True:
+            self.show_results()
+            self.__name_entries[0].focus_set()
+
+    def show_results(self):
+        """
+        This function displays the results after being submitted
+        :param students1: This is a string that contains every student's name paired with their grade
+        """
+        self.__students = classes.logic(self.__grades,self.__students)
+        __students1 = '\n'.join("{}: {}".format(key, value) for key, value in self.__students.items())
+        messagebox.showinfo("Grades", __students1)
+
+    def resetAll(self):
+        """
+        This function clears out the lists of entries
+        """
+        for index,value in enumerate(self.name_entries):
+            self.name_entries[index].delete(0,END)
+        for index,value in enumerate(self.grade_entries):
+             self.grade_entries[index].delete(0,END)
+    def restart(self):
+        """
+        This list restarts the program
+        :param python: This calls the imported sys module to be reset by the os module
+        """
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
