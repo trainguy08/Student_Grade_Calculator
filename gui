@@ -101,24 +101,36 @@ class Gui:
         """
         self.__grades: list = []
         self.__students: list = []
-        for index,value in enumerate(self.__grade_entries):
-            if value.get().isdigit():
-                self.__grades.append(int(value.get()))
-                self.result = True
-            else:
-                messagebox.showerror('Input Error', f'Error:Grade must be numeric!')
-                self.__grade_entries[index].focus_set()
-                self.result = False
-                break
-        for index,value in enumerate(self.__name_entries):
-            if value.get() not in self.__students:
+        for index, value in enumerate(self.__name_entries):
+            if value.get() not in self.__students and value.get() != '':
                 self.__students.append(str(value.get()))
-                self.result = True
-            else:
-                self.result = False
-                messagebox.showerror("Name Error","Name Already in Use")
+                result = True
+            elif value.get() == '':
+                result = False
+                messagebox.showerror("Name Error","Please Enter A Name")
+                self.__name_entries[index].focus_set()
                 break
-        if self.result == True:
+            else:
+                result = False
+                messagebox.showerror("Name Error","Name Already in Use")
+                self.__name_entries[index].focus_set()
+                break
+        if result == True:
+            for index, value in enumerate(self.__grade_entries):
+                if value.get().isdigit():
+                    self.__grades.append(int(value.get()))
+                    self.grade_result = True
+                elif value.get() == '':
+                    messagebox.showerror('Input Error', f'Please Enter Number')
+                    self.__grade_entries[index].focus_set()
+                    self.grade_result = False
+                    break
+                else:
+                    messagebox.showerror('Input Error', f'Error:Grade must be numeric!')
+                    self.__grade_entries[index].focus_set()
+                    self.grade_result = False
+                    break
+        if self.grade_result == True:
             self.show_results()
             self.__name_entries[0].focus_set()
 
@@ -135,10 +147,10 @@ class Gui:
         """
         This function clears out the lists of entries
         """
-        for index,value in enumerate(self.name_entries):
-            self.name_entries[index].delete(0,END)
-        for index,value in enumerate(self.grade_entries):
-             self.grade_entries[index].delete(0,END)
+        for index,value in enumerate(self.__name_entries):
+            self.__name_entries[index].delete(0,END)
+        for index,value in enumerate(self.__grade_entries):
+             self.__grade_entries[index].delete(0,END)
     def restart(self):
         """
         This list restarts the program
